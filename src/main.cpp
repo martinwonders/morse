@@ -23,7 +23,7 @@ static DigitalOut green(LED_GREEN);
 static DigitalOut led_app_red(D5);
 static DigitalOut led_app_green(D9);
 
-char message[] = "Hello World!"; /* message to send */
+char message[] = "SOS"; /* message to send */
 char morse[1024];
 char onoff[1024]; /* buffer for string of 01 to control LED */
 
@@ -42,9 +42,22 @@ char onoff[1024]; /* buffer for string of 01 to control LED */
  */
 char *texttomorse(char *messsage, char *morsebuffer)
 {
-	char *c;
-	/* translate string to morse */
-	return morsebuffer;
+    char c;
+    /* translate string to morse */
+    for (int i = 0; message[i] != '\0'; ++i) {
+        c = message[i];  //c is the current character in the string
+        if (c == ' ') {
+            strcat(morsebuffer, "\t"); //use tabs for inter-word spaces
+        } else {
+            //get the morse string for this character
+            const char *m = morsechar(c); 
+            if (m != NULL) {
+                strcat(morsebuffer, m); //add the morse code to the buffer
+                strcat(morsebuffer, " "); //add inter-letter space
+            }
+        }
+    }   
+    return morsebuffer;
 }
 
 /* Translate morse in ascii into binary
@@ -67,11 +80,23 @@ char *texttomorse(char *messsage, char *morsebuffer)
  */
 char *morsetobinary(char *morse, char *binbuffer)
 {
-	char *c;
-	/* convert to "01" string  */
-	return binbuffer;
+    char c;
+    for (int i = 0; morse[i] !='\0'; ++i) {
+        c = morse[i];
+        switch(c) {
+            case '.': strcat(binbuffer, dot);
+                break;
+            case '-': strcat(binbuffer, dash);
+                break;
+            case ' ': strcat(binbuffer, lettersp);
+                break;
+            case '\t': strcat(binbuffer, wordsp);
+                break;
+        }
+    }    
+    /* convert to "01" string  */
+    return binbuffer;
 }
-
 /* Task for sending morse.
  * Uses the hard-wired buffer 'onoff' declared above.
  */
@@ -100,8 +125,8 @@ int main () {
 
     schInit();
 
-	texttomorse(message, morse);
-	morsetobinary(morse, onoff);
+    texttomorse(message, morse);
+    morsetobinary(morse, onoff);
 
     schAddTask(morseblink, 0, 200);
     schAddTask(led2ToggleTask, 500, 500);
