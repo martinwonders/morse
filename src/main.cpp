@@ -37,10 +37,8 @@ char onoff[1024]; /* buffer for string of 01 to control LED */
  *     char * message      string to convert
  *     char * morsebuffer  buffer into which morse is written
  *
- * returns:
- *     char *              pointer to converted morse, 
  */
-char *texttomorse(char *messsage, char *morsebuffer)
+void texttomorse(char *messsage, char *morsebuffer)
 {
     char c;
     /* translate string to morse */
@@ -57,7 +55,6 @@ char *texttomorse(char *messsage, char *morsebuffer)
             }
         }
     }   
-    return morsebuffer;
 }
 
 /* Translate morse in ascii into binary
@@ -75,10 +72,8 @@ char *texttomorse(char *messsage, char *morsebuffer)
  *      char * morse       morse string
  *      char * binbuffer   buffer for output
  *
- * return:
- *     char *         pointer to binbuffer
  */
-char *morsetobinary(char *morse, char *binbuffer)
+void morsetobinary(char *morse, char *binbuffer)
 {
     char c;
     for (int i = 0; morse[i] !='\0'; ++i) {
@@ -94,8 +89,6 @@ char *morsetobinary(char *morse, char *binbuffer)
                 break;
         }
     }    
-    /* convert to "01" string  */
-    return binbuffer;
 }
 /* Task for sending morse.
  * Uses the hard-wired buffer 'onoff' declared above.
@@ -129,7 +122,7 @@ int main () {
     morsetobinary(morse, onoff);
 
     schAddTask(morseblink, 0, 200);
-    schAddTask(led2ToggleTask, 500, 500);
+    //schAddTask(led2ToggleTask, 500, 500);
 
 
     schStart();
